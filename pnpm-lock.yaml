@@ -4,18 +4,18 @@ specifiers:
   '@types/chai': ^4.3.4
   '@types/chai-as-promised': ^7.1.5
   '@types/mocha': ^10.0.0
-  '@types/node': ^15.12.2
-  '@typescript-eslint/eslint-plugin': ^5.3.0
-  '@typescript-eslint/parser': ^5.3.0
+  '@types/node': ^18.11.9
+  '@typescript-eslint/eslint-plugin': ^5.44.0
+  '@typescript-eslint/parser': ^5.44.0
   chai: ^4.3.7
   chai-as-promised: ^7.1.1
   dotenv: ^16.0.3
-  eslint: ^8.2.0
+  eslint: ^8.28.0
   mocha: ^10.1.0
   pg: ^8.8.0
   reflect-metadata: ^0.1.13
   typeorm: ^0.3.10
-  typescript: ^4.3.2
+  typescript: ^4.9.3
 
 dependencies:
   dotenv: 16.0.3
@@ -27,7 +27,7 @@ devDependencies:
   '@types/chai': 4.3.4
   '@types/chai-as-promised': 7.1.5
   '@types/mocha': 10.0.0
-  '@types/node': 15.14.9
+  '@types/node': 18.11.9
   '@typescript-eslint/eslint-plugin': 5.44.0_fnsv2sbzcckq65bwfk7a5xwslu
   '@typescript-eslint/parser': 5.44.0_hsf322ms6xhhd4b5ne6lb74y4a
   chai: 4.3.7
@@ -118,8 +118,8 @@ packages:
     resolution: {integrity: sha512-rADY+HtTOA52l9VZWtgQfn4p+UDVM2eDVkMZT1I6syp0YKxW2F9v+0pbRZLsvskhQv/vMb6ZfCay81GHbz5SHg==}
     dev: true
 
-  /@types/node/15.14.9:
-    resolution: {integrity: sha512-qjd88DrCxupx/kJD5yQgZdcYKZKSIGBVDIBE1/LTGcNm3d2Np/jxojkdePDdfnBHJc5W7vSMpbJ1aB7p/Py69A==}
+  /@types/node/18.11.9:
+    resolution: {integrity: sha512-CRpX21/kGdzjOpFsZSkcrXMGIBWMGNIHXXBVFSH+ggkftxg+XYP20TESbh+zFvFj3EQOl5byk0HTRn1IL6hbqg==}
     dev: true
 
   /@types/semver/7.3.13:
@@ -1593,11 +1593,6 @@ packages:
   /yargs-parser/20.2.4:
     resolution: {integrity: sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==}
     engines: {node: '>=10'}
-    dev: true
-
-  /yargs-parser/20.2.9:
-    resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
-    engines: {node: '>=10'}
 
   /yargs-parser/21.1.1:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
@@ -1624,7 +1619,7 @@ packages:
       require-directory: 2.1.1
       string-width: 4.2.3
       y18n: 5.0.8
-      yargs-parser: 20.2.9
+      yargs-parser: 20.2.4
 
   /yargs/17.6.2:
     resolution: {integrity: sha512-1/9UrdHjDZc0eOU0HxOHoS78C69UD3JRMvzlJ7S79S2nTaWRA/whGCTV8o9e/N/1Va9YIV7Q4sOxD8VV4pCWOw==}
