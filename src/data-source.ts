@@ -1,7 +1,7 @@
 import { DataSource } from 'typeorm';
 import { User } from './entities/user';
 import * as dotenv from 'dotenv';
-import { UserSubscriber } from './validators/validation';
+import { UserSubscriber } from './validators/user-subscriber';
 dotenv.config()
 
 export const AppDataSource = (): DataSource => {

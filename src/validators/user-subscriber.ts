@@ -19,9 +19,8 @@ export class UserSubscriber implements EntitySubscriberInterface<User> {
     private async validate(user: User) {
         const errors = await validate(user);
         if (errors.length > 0) {
-            console.log(errors);
             throw errors[0];
         }
     }
-    
+
 }

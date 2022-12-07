@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, Index, Unique } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, Index } from "typeorm"
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from "class-validator"
+import { UniqueInColumn } from "../decorators/unique-in-column"
 @Entity()
 @Index("USER_EMAIL_INDEX", { synchronize: false })
 export class User {
@@ -27,6 +28,7 @@ export class User {
     })
     @IsNotEmpty()
     @IsEmail()
+    @UniqueInColumn()
     email!: string
 
     @Column()

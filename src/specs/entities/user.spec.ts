@@ -60,7 +60,19 @@ describe('User', () => {
             
             chai.expect(userInDB1).deep.equal(user);
             chai.expect(userInDB2).deep.equal(user);
-            chai.expect(time2).to.be.lessThanOrEqual(time1);
+            chai.expect(time2).to.be.lessThanOrEqual(time1 + 1);
+        });
+        it('should save user with lowercase email', async () => {
+            const user = new User();
+            user.firstname = 'John';
+            user.lastname = 'Doe';
+            user.email = 'JOHN.DOE@DOMAIN.TLD';
+            user.passwordHash = 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86';
+            await datasource.getRepository(User).save(user);
+
+            const userInDB = await datasource.getRepository(User).findOne({ where: { email: user.email } });
+           
+            chai.expect(userInDB?.email).to.be.equal(user.email.toLowerCase());
         });
     })
 })
