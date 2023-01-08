@@ -2,13 +2,13 @@ import { validate } from "class-validator";
 import { EntityManager, InsertEvent } from "typeorm";
 
 export interface EntityWithManager {
-    id: String;
+    id: string;
     manager: EntityManager;
 }
 
-export function validateWithManager(event: Event, manager: EntityManager) {
+export async function validateWithManager(event: Event, manager: EntityManager) {
     try {
-        validate(entity);
+        await validate(event.target);
     }
     finally {
         delete entity.manager;
