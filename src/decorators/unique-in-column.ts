@@ -5,17 +5,23 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { AppDataSource } from '../data-source';
+import { User } from '../entities/user';
 
 @ValidatorConstraint({ async: true })
 export class EntityAlreadyExistsConstraint implements ValidatorConstraintInterface {
-  async validate(property: unknown) {
-    if (typeof property !== 'string') {
+  async validate(value: unknown) {
+    if (typeof value !== 'string') {
       return false;
     }
-    const repo = AppDataSource().getRepository(typeof property);
-    const entity = await repo.findOne({ where: { property } });
+    const repo = AppDataSource.getRepository(User);
+    const entity = await repo.findOne({ where: { email: value } });
     return !entity;
   }
+
+  defaultMessage() {
+    return 'email already exists';
+  }
+
 }
 
 export function UniqueInColumn(validationOptions?: ValidationOptions) {
@@ -26,7 +32,7 @@ export function UniqueInColumn(validationOptions?: ValidationOptions) {
       propertyName: propertyName,
       options: validationOptions,
       constraints: [],
-      validator: EntityAlreadyExistsConstraint,
+      validator: EntityAlreadyExistsConstraint
     });
   };
 }

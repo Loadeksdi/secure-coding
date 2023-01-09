@@ -10,4 +10,6 @@ In the current test case "should raise error if email is missing", an SQL error 
 We need both a database constraint and a validation in typescript for the same check because the database constraint is not enough to ensure that the data is valid, and it is better to avoid creating transactions with invalid data when it can be prevented.
 
 ## Question 4 - how models validations, such as the one you just wrote, can serve the security of your application? Give an example. In addition, which database mechanism can be leveraged for security hardening in case a validation fails (ex. while persisting 2 entities in response to the same action)? Clue: the mechanism I am thinking about could also operate on afterUpdate subscriptions.
+Model validation helps to ensure that the data produced by user input is well-formatted and follows the objects we decided to work with so we do not have any bad surprises at runtime. An example is that an invalid email could lend to not update a final customer or even worse if the person is malicious and decides to try an SQL injection for example, model validations help input sanitization. Using database constraint with the uniqueness of columns can help in case a validation fails. Eventually, (I would personnally not recommend this one) we can use a database trigger to rollback the transaction if a validation fails.  
+
 

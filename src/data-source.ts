@@ -4,7 +4,7 @@ import * as dotenv from 'dotenv';
 import { UserSubscriber } from './validators/user-subscriber';
 dotenv.config()
 
-export const AppDataSource = (): DataSource => {
+export const AppDataSource = ((): DataSource => {
     const port = process.env.DB_PORT;
     const host = process.env.DB_HOST;
     const username = process.env.DB_USERNAME;
@@ -26,4 +26,4 @@ export const AppDataSource = (): DataSource => {
         subscribers: [UserSubscriber],
         migrations: [],
     })
-};
+})();
