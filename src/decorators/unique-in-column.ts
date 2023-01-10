@@ -4,8 +4,8 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
 } from 'class-validator';
-import { AppDataSource } from '../data-source';
 import { User } from '../entities/user';
+import { AppDataSource } from '../lib/typeorm';
 
 @ValidatorConstraint({ async: true })
 export class EntityAlreadyExistsConstraint implements ValidatorConstraintInterface {

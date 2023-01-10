@@ -63,9 +63,6 @@ export class User {
             throw passwordNotSecureError;
         }
         this.passwordHash = await bcrypt.hash(passwordDto.password, 10);
-        // Because it is said to discard the password and passwordConfirmation
-        delete passwordDto.password;
-        delete passwordDto.passwordConfirmation;
     }
 
     async isPasswordValid(password: string): Promise<boolean> {

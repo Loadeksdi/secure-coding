@@ -1,0 +1,24 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Create User Request Body Schema",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "firstname": {
+        "type": "string"
+      },
+      "lastname": {
+        "type": "string"
+      },
+      "email": {
+        "type": "string"
+      },
+      "password": {
+        "type": "string"
+      },
+      "passwordConfirmation":{
+        "type": "string"
+      }
+    },
+    "required": ["firstname", "lastname", "email", "password", "passwordConfirmation"]
+  }
