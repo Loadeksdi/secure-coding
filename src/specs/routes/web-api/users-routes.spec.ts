@@ -1,12 +1,8 @@
 import { server } from '../../../lib/fastify'
-import * as chai from 'chai'
-import * as chaiAsPromised from 'chai-as-promised'
 import { userRequest } from '../../../schemas/user-request';
 import { FromSchema } from 'json-schema-to-ts';
-
-chai.use(chaiAsPromised);
-
-const securedPassword = 'b109f3bbbc244eb82441917ed06d618b9008dd09b3befd1b5e07394c706a8bb980b1d7785e5976ec049b46df5f1326af5a2ea6d103fd07c95385ffab0cacbc86';
+import { myChai, myDatasource, testPassword } from '../../helpers.spec';
+import { User } from '../../../entities/user';
 
 describe('/web-api/users', function () {
     describe('POST #create', function () {
@@ -15,11 +11,25 @@ describe('/web-api/users', function () {
                 firstname: "John",
                 lastname: "Doe",
                 email: "john.doe@domain.tld",
-                password: securedPassword,
-                passwordConfirmation: securedPassword
+                password: testPassword,
+                passwordConfirmation: testPassword
             }
             const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload });
-            chai.expect(response.statusCode).to.equal(201);
+            myChai.expect(response.statusCode).to.equal(201);
+            myChai.expect(response.json()).to.have.property('id')
+            myChai.expect(response.json()).not.to.have.property('passwordHash')
+            myChai.expect(response.json()).to.contains({
+                firstname: payload.firstname,
+                lastname: payload.lastname,
+                email: payload.email,
+            })
+            const userInDB = await myDatasource.getRepository(User).findOne({ where: { email: payload.email }});
+            myChai.expect(userInDB).to.have.property('id')
+            myChai.expect(userInDB).to.contains({
+                firstname: payload.firstname,
+                lastname: payload.lastname,
+                email: payload.email,
+            });
         })
     })
 })

@@ -13,9 +13,7 @@ server.post<{ Body: FromSchema<typeof userRequest>, Reply: FromSchema<typeof use
         schema: {
             body: userRequest,
             response: {
-                201: {
-                    userResponse
-                },
+                201: userResponse
             },
         }
     },
@@ -27,12 +25,6 @@ server.post<{ Body: FromSchema<typeof userRequest>, Reply: FromSchema<typeof use
         await user.setPassword({ password: request.body.password, passwordConfirmation: request.body.passwordConfirmation });
         const repo = AppDataSource.getRepository(User);
         await repo.save(user);
-        const createdUser: FromSchema<typeof userResponse> = {
-            id: user.id,
-            firstname: user.firstname,
-            lastname: user.lastname,
-            email: user.email,
-        }
-        await reply.code(201).send(createdUser);
+        await reply.code(201).send(user);
     },
 );

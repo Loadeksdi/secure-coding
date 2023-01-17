@@ -14,5 +14,6 @@ export const userResponse = {
             type: "string"
         }
     },
-    required: ["id", "email", "firstname", "lastname"]
+    required: ["id", "email", "firstname", "lastname"],
+    additionalProperties: false
 } as const;

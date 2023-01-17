@@ -17,5 +17,6 @@ export const userRequest = {
             type: "string"
         }
     },
-    required: ["firstname", "lastname", "email", "password", "passwordConfirmation"]
+    required: ["firstname", "lastname", "email", "password", "passwordConfirmation"],
+    additionalProperties: false
 } as const;

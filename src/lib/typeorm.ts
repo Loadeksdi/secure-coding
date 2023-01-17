@@ -1,7 +1,6 @@
 import { DataSource } from 'typeorm';
 import * as dotenv from 'dotenv';
 import { UserSubscriber } from '../validators/user-subscriber';
-import { User } from '../entities/user';
 import { getEnvs } from './dotenv';
 dotenv.config()
 
@@ -16,7 +15,7 @@ export const AppDataSource = ((): DataSource => {
         database,
         synchronize: true,
         logging: true,
-        entities: [User],
+        entities: ['dist/entities/*.{ts,js}'],
         subscribers: [UserSubscriber],
         migrations: [],
     })
