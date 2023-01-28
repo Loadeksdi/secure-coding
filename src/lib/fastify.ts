@@ -1,4 +1,9 @@
-import fastify, { RouteOptions } from 'fastify'
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { ValidationError } from 'class-validator';
+import fastify, { FastifyError, FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
+import { EntityNotFoundError } from 'typeorm';
 import { webApiRoutes } from '../routes/web-api/web-api-routes'
 import { getEnvs } from './dotenv'
 
@@ -30,6 +35,40 @@ export const assertsParamsSchemaPresenceHook = (routeOptions: RouteOptions) => {
     }
 }
 
+const removeDangerousProperties = (obj: any) => {
+    // Example of properties that could be in the object, another appropriate way would be to
+    // make entities implement an interface that would have a method to remove the properties
+    const dangerousProperties = ["password", "passwordHash", "passwordSalt", "passwordResetToken", "token"];
+    for (const dangerousProperty of dangerousProperties) {
+        if (obj[dangerousProperty] !== undefined) {
+            delete obj[dangerousProperty];
+        }
+    }
+    return obj;
+}
+
+export const myErrorHandler = (error: FastifyError, request: FastifyRequest, reply: FastifyReply) => {
+    if (error instanceof ValidationError) {
+        return reply.status(400).send({
+            error: "Bad Request",
+            object: removeDangerousProperties(error.target),
+            property: error.property,
+            constraints: error.constraints
+        });
+    }
+    if (error instanceof EntityNotFoundError) {
+        return reply.status(404).send({
+            error: "Not Found",
+            request,
+            message: error.message,
+        })
+    }
+    if (!error.statusCode || error.statusCode >= 500) {
+        error.message = "Internal Server Error";
+    }
+    reply.send(error);
+}
+
 export const server = fastify({
     logger: getEnvs().FASTIFY_LOGGING === "true",
     ajv: {
@@ -38,7 +77,8 @@ export const server = fastify({
         }
     }
 }).addHook('onRoute', assertsResponseSchemaPresenceHook)
-.addHook('onRoute', assertsBodySchemaPresenceHook)
+    .addHook('onRoute', assertsBodySchemaPresenceHook)
     .addHook('onRoute', assertsQuerySchemaPresenceHook)
     .addHook('onRoute', assertsParamsSchemaPresenceHook)
-.register(webApiRoutes, { prefix: '/web-api' })
+    .setErrorHandler(myErrorHandler)
+    .register(webApiRoutes, { prefix: '/web-api' })

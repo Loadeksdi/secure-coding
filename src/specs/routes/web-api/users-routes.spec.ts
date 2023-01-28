@@ -1,4 +1,4 @@
-import { assertsBodySchemaPresenceHook, assertsParamsSchemaPresenceHook, assertsQuerySchemaPresenceHook, assertsResponseSchemaPresenceHook, server } from '../../../lib/fastify'
+import { assertsBodySchemaPresenceHook, assertsParamsSchemaPresenceHook, assertsQuerySchemaPresenceHook, assertsResponseSchemaPresenceHook, myErrorHandler, server } from '../../../lib/fastify'
 import { userRequest } from '../../../schemas/user-request';
 import { FromSchema } from 'json-schema-to-ts';
 import { myChai, myDatasource, testPassword } from '../../helpers.spec';
@@ -32,14 +32,14 @@ describe('/web-api/users', function () {
                 email: payload.email,
             });
         })
-        it('should throw an error if sending more properties for an user', async () => {
+        it('should throw an error if sending too many properties for an user', async () => {
             const payload = {
                 firstname: "John",
                 lastname: "Doe",
                 email: "john.doe@domain.tld",
                 password: testPassword,
                 passwordConfirmation: testPassword,
-                foo: "bar"
+                foo: 'bar'
             };
             const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload });
             myChai.expect(response.statusCode).to.equal(400);
@@ -87,6 +87,42 @@ describe('/web-api/users', function () {
                         handler: (_, reply) => { reply.send('Hello world!') }
                     })
             ).to.throw('Missing schema on params for route /hello-world');
+        })
+        it("it should return Internal Server Error on 500", async () => {
+            const server = fastify().setErrorHandler(myErrorHandler);
+            server.route(
+                {
+                    method: 'POST',
+                    url: '/hello-world',
+                    handler: () => { throw new Error("Error: Hello world!") }
+                }
+            );
+            const response = await server.inject({ url: `/hello-world`, method: 'POST' });
+            myChai.expect(response.statusCode).to.equal(500);
+            myChai.expect(response.json()).to.have.property('message').and.to.equal("Internal Server Error");
+        })
+        it("it should return 400 on invalid user", async () => {
+            const payload = {
+                firstname: "John",
+                lastname: "",
+                email: "john.doe@domain.tld",
+                password: testPassword,
+                passwordConfirmation: testPassword,
+            };
+            const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload })
+            myChai.expect(response.statusCode).to.equal(400);
+            myChai.expect(response.json()).to.deep.include({
+                constraints: {
+                    isNotEmpty: "lastname should not be empty"
+                },
+                error: "Bad Request",
+                property: "lastname",
+                object: {
+                    email: "john.doe@domain.tld",
+                    firstname: "John",
+                    lastname: ""
+                }
+            })
         })
     })
 })
