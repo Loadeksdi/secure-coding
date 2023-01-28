@@ -23,3 +23,10 @@ The REST naming convention is resource-oriented, there are multiple rules to fol
 
 ## Question 2: considering they use REST naming convention, what would do POST /web-api/users and POST /web-api/sessions endpoints?
 According to the REST naming convention, POST /web-api/users would create a new user and POST /web-api/sessions would create a new session.
+
+## Question 4: how behaves fastify: if no json schema is provided for any of body, query and params ? if the client submits an unknown property, according to the JSON schema? if the client omits a required property, according to the JSON schema?
+- If no JSON schema is provided for any of body, query and params, fastify will not validate the request. 
+- If the client submits an unknown property, fastify will silently dismiss the request since we have set the additionalProperties to false. 
+- Finally, if the client omits a required property according to the JSON schema, fastify will raise an error.
+
+

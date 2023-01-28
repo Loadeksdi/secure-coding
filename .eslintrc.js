@@ -23,5 +23,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
 
     // Feel free to enable/disable some rules depending on your needs.
+    '@typescript-eslint/no-floating-promises': 'off',
   }
 }

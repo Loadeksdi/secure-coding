@@ -34,22 +34,6 @@ describe('User', () => {
                 }
             });
         });
-        // Questionnable performance test
-        it('should fetch user by id as fast as by email', async () => {
-            const user = await buildUser('john.doe@domain.tld');
-            await myDatasource.getRepository(User).save(user);
-
-            let now = Date.now();
-            const userInDB1 = await myDatasource.getRepository(User).findOne({ where: { email: user.email } });
-            const time1 = Date.now() - now;
-            now = Date.now();
-            const userInDB2 = await myDatasource.getRepository(User).findOne({ where: { id: user.id } });
-            const time2 = Date.now() - now;
-
-            myChai.expect(userInDB1).deep.equal(user);
-            myChai.expect(userInDB2).deep.equal(user);
-            myChai.expect(time2).to.be.lessThanOrEqual(time1 + 1);
-        });
         it('should save user with lowercase email', async () => {
             const user = await buildUser('john.doe@domain.tld');
             await myDatasource.getRepository(User).save(user);

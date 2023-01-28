@@ -6,8 +6,9 @@ export const getEnvs = () => {
     const database = process.env.DB_NAME;
     const FASTIFY_PORT = process.env.FASTIFY_PORT;
     const FASTIFY_ADDR = process.env.FASTIFY_ADDR;
-    if (!port || !host || !username || !password || !database || !FASTIFY_PORT || !FASTIFY_ADDR) {
+    const FASTIFY_LOGGING = process.env.FASTIFY_LOGGING;
+    if (!port || !host || !username || !password || !database || !FASTIFY_PORT || !FASTIFY_ADDR || !FASTIFY_LOGGING) {
         throw new Error('Missing environment variables');
     }
-    return { port, host, username, password, database, FASTIFY_PORT, FASTIFY_ADDR };
+    return { port, host, username, password, database, FASTIFY_PORT, FASTIFY_ADDR, FASTIFY_LOGGING };
 }

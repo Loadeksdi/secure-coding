@@ -1,30 +1,44 @@
-import fastify from 'fastify'
-import { FromSchema } from "json-schema-to-ts";
-import { User } from '../entities/user';
-import { userRequest } from '../schemas/user-request';
-import { userResponse } from '../schemas/user-response';
-import { AppDataSource } from './typeorm';
+import fastify, { RouteOptions } from 'fastify'
+import { webApiRoutes } from '../routes/web-api/web-api-routes'
+import { getEnvs } from './dotenv'
 
-export const server = fastify();
+export const assertsResponseSchemaPresenceHook = (routeOptions: RouteOptions) => {
+    const schema = routeOptions.schema;
+    if (!schema?.response) {
+        throw new Error(`Missing schema on response for route ${routeOptions.url}`)
+    }
+}
 
-server.post<{ Body: FromSchema<typeof userRequest>, Reply: FromSchema<typeof userResponse> }>(
-    '/web-api/users',
-    {
-        schema: {
-            body: userRequest,
-            response: {
-                201: userResponse
-            },
+export const assertsBodySchemaPresenceHook = (routeOptions: RouteOptions) => {
+    const schema = routeOptions.schema;
+    if (!schema?.body) {
+        throw new Error(`Missing schema on request body for route ${routeOptions.url}`)
+    }
+}
+
+export const assertsQuerySchemaPresenceHook = (routeOptions: RouteOptions) => {
+    const schema = routeOptions.schema;
+    if (!schema?.querystring) {
+        throw new Error(`Missing schema on query for route ${routeOptions.url}`)
+    }
+}
+
+export const assertsParamsSchemaPresenceHook = (routeOptions: RouteOptions) => {
+    const schema = routeOptions.schema;
+    if (!schema?.params) {
+        throw new Error(`Missing schema on params for route ${routeOptions.url}`)
+    }
+}
+
+export const server = fastify({
+    logger: getEnvs().FASTIFY_LOGGING === "true",
+    ajv: {
+        customOptions: {
+            removeAdditional: false,
         }
-    },
-    async (request, reply): Promise<void> => {
-        const user = new User();
-        user.firstname = request.body.firstname;
-        user.lastname = request.body.lastname;
-        user.email = request.body.email;
-        await user.setPassword({ password: request.body.password, passwordConfirmation: request.body.passwordConfirmation });
-        const repo = AppDataSource.getRepository(User);
-        await repo.save(user);
-        await reply.code(201).send(user);
-    },
-);
+    }
+}).addHook('onRoute', assertsResponseSchemaPresenceHook)
+.addHook('onRoute', assertsBodySchemaPresenceHook)
+    .addHook('onRoute', assertsQuerySchemaPresenceHook)
+    .addHook('onRoute', assertsParamsSchemaPresenceHook)
+.register(webApiRoutes, { prefix: '/web-api' })
