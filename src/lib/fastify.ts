@@ -3,6 +3,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ValidationError } from 'class-validator';
 import fastify, { FastifyError, FastifyReply, FastifyRequest, RouteOptions } from 'fastify'
+import type { FastifyCookieOptions } from '@fastify/cookie'
+import cookie from '@fastify/cookie'
 import { EntityNotFoundError } from 'typeorm';
 import { webApiRoutes } from '../routes/web-api/web-api-routes'
 import { getEnvs } from './dotenv'
@@ -82,3 +84,7 @@ export const server = fastify({
     .addHook('onRoute', assertsParamsSchemaPresenceHook)
     .setErrorHandler(myErrorHandler)
     .register(webApiRoutes, { prefix: '/web-api' })
+    .register(cookie, {
+        secret: getEnvs().cookieSecret,
+        parseOptions: {}
+    } as FastifyCookieOptions)

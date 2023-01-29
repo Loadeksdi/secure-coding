@@ -7,8 +7,9 @@ export const getEnvs = () => {
     const FASTIFY_PORT = process.env.FASTIFY_PORT;
     const FASTIFY_ADDR = process.env.FASTIFY_ADDR;
     const FASTIFY_LOGGING = process.env.FASTIFY_LOGGING;
-    if (!port || !host || !username || !password || !database || !FASTIFY_PORT || !FASTIFY_ADDR || !FASTIFY_LOGGING) {
+    const cookieSecret = process.env.COOKIE_SECRET;
+    if (!port || !host || !username || !password || !database || !FASTIFY_PORT || !FASTIFY_ADDR || !FASTIFY_LOGGING || !cookieSecret) {
         throw new Error('Missing environment variables');
     }
-    return { port, host, username, password, database, FASTIFY_PORT, FASTIFY_ADDR, FASTIFY_LOGGING };
+    return { port, host, username, password, database, FASTIFY_PORT, FASTIFY_ADDR, FASTIFY_LOGGING, cookieSecret };
 }

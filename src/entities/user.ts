@@ -38,7 +38,7 @@ export class User {
     @IsNotEmpty()
     @IsString()
     @MaxLength(128)
-    private passwordHash!: string
+    passwordHash!: string
 
     async setPassword(passwordDto: PasswordDTO) {
         if (!passwordDto.password) {

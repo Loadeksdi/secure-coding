@@ -1,7 +1,7 @@
 import { assertsBodySchemaPresenceHook, assertsParamsSchemaPresenceHook, assertsQuerySchemaPresenceHook, assertsResponseSchemaPresenceHook, myErrorHandler, server } from '../../../lib/fastify'
 import { userRequest } from '../../../schemas/user-request';
 import { FromSchema } from 'json-schema-to-ts';
-import { myChai, myDatasource, testPassword } from '../../helpers.spec';
+import { myChai, myDatasource } from '../../helpers.spec';
 import { User } from '../../../entities/user';
 import fastify from 'fastify';
 
@@ -12,8 +12,8 @@ describe('/web-api/users', function () {
                 firstname: "John",
                 lastname: "Doe",
                 email: "john.doe@domain.tld",
-                password: testPassword,
-                passwordConfirmation: testPassword
+                password: "changethatchangethatchangethat",
+                passwordConfirmation: "changethatchangethatchangethat",
             }
             const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload });
             myChai.expect(response.statusCode).to.equal(201);
@@ -37,8 +37,8 @@ describe('/web-api/users', function () {
                 firstname: "John",
                 lastname: "Doe",
                 email: "john.doe@domain.tld",
-                password: testPassword,
-                passwordConfirmation: testPassword,
+                password: "changethat",
+                passwordConfirmation: "changethat",
                 foo: 'bar'
             };
             const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload });
@@ -106,8 +106,8 @@ describe('/web-api/users', function () {
                 firstname: "John",
                 lastname: "",
                 email: "john.doe@domain.tld",
-                password: testPassword,
-                passwordConfirmation: testPassword,
+                password: "changethatchangethatchangethat",
+                passwordConfirmation: "changethatchangethatchangethat",
             };
             const response = await server.inject({ url: `/web-api/users`, method: 'POST', payload })
             myChai.expect(response.statusCode).to.equal(400);
