@@ -1,9 +1,13 @@
 import { assertsBodySchemaPresenceHook, assertsParamsSchemaPresenceHook, assertsQuerySchemaPresenceHook, assertsResponseSchemaPresenceHook, myErrorHandler, server } from '../../../lib/fastify'
 import { userRequest } from '../../../schemas/user-request';
 import { FromSchema } from 'json-schema-to-ts';
-import { myChai, myDatasource } from '../../helpers.spec';
+import { myChai, myDatasource, signCookie } from '../../helpers.spec';
 import { User } from '../../../entities/user';
 import fastify from 'fastify';
+import { buildSessionFixture, createSessionFixture } from '../../fixtures/sessions-fixtures.spec';
+import { createUserFixture } from '../../fixtures/users-fixtures.spec';
+import { AppDataSource } from '../../../lib/typeorm';
+import { Session } from '../../../entities/session';
 
 describe('/web-api/users', function () {
     describe('POST #create', function () {
@@ -123,6 +127,55 @@ describe('/web-api/users', function () {
                     lastname: ""
                 }
             })
+        })
+    })
+})
+describe('/web-api/users/me', () => {
+    describe('GET', () => {
+        it('should respond with the current user identity', async () => {
+            const user = await createUserFixture();
+            const session = await createSessionFixture({ user });
+            const response = await server.inject({
+                url: `/web-api/users/me`, method: 'GET', cookies: {
+                    session: signCookie(session.id),
+                }
+            });
+            myChai.expect(response.statusCode).to.equal(200);
+            myChai.expect(response.json()).to.deep.equal(session.user);
+        })
+        it('should respond with 401 if user is not logged in', async () => {
+            const user = await createUserFixture();
+            await createSessionFixture({ user });
+            const response = await server.inject({ url: `/web-api/users/me`, method: 'GET' });
+            myChai.expect(response.statusCode).to.equal(401);
+        })
+        it('should respond with 401 if unsigned cookie', async () => {
+            const response = await server.inject({
+                url: `/web-api/users/me`, method: 'GET', cookies: {
+                    session: '123',
+                }
+            });
+            myChai.expect(response.statusCode).to.equal(401);
+        });
+        it('should respond with 401 if cookie signature with a wrong key', async () => {
+            const response = await server.inject({ url: `/web-api/users/me`, method: 'GET', cookies: { session: '123' } });
+            myChai.expect(response.statusCode).to.equal(401);
+        });
+        it('should respond with 401 if session has expired', async () => {
+            const user = await createUserFixture();
+            const session = buildSessionFixture({ user });
+            session.expiredAt = new Date(new Date().getDate() - 1);
+            await AppDataSource.getRepository(Session).save(session);
+            const response = await server.inject({ url: `/web-api/users/me`, method: 'GET' });
+            myChai.expect(response.statusCode).to.equal(401);
+        })
+        it('should respond with 401 if session has been revoked', async () => {
+            const user = await createUserFixture();
+            const session = buildSessionFixture({ user });
+            session.revokedAt = new Date(new Date().getDate() - 1);
+            await AppDataSource.getRepository(Session).save(session);
+            const response = await server.inject({ url: `/web-api/users/me`, method: 'GET' });
+            myChai.expect(response.statusCode).to.equal(401);
         })
     })
 })

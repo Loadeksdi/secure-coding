@@ -8,6 +8,7 @@ import cookie from '@fastify/cookie'
 import { EntityNotFoundError } from 'typeorm';
 import { webApiRoutes } from '../routes/web-api/web-api-routes'
 import { getEnvs } from './dotenv'
+import { loadSession } from './session';
 
 export const assertsResponseSchemaPresenceHook = (routeOptions: RouteOptions) => {
     const schema = routeOptions.schema;
@@ -18,7 +19,7 @@ export const assertsResponseSchemaPresenceHook = (routeOptions: RouteOptions) =>
 
 export const assertsBodySchemaPresenceHook = (routeOptions: RouteOptions) => {
     const schema = routeOptions.schema;
-    if (!schema?.body) {
+    if (!schema?.body && routeOptions.method !== "GET" && routeOptions.method !== "HEAD") {
         throw new Error(`Missing schema on request body for route ${routeOptions.url}`)
     }
 }
@@ -82,9 +83,10 @@ export const server = fastify({
     .addHook('onRoute', assertsBodySchemaPresenceHook)
     .addHook('onRoute', assertsQuerySchemaPresenceHook)
     .addHook('onRoute', assertsParamsSchemaPresenceHook)
+    .addHook('preHandler', loadSession)
     .setErrorHandler(myErrorHandler)
     .register(webApiRoutes, { prefix: '/web-api' })
     .register(cookie, {
         secret: getEnvs().cookieSecret,
-        parseOptions: {}
+        parseOptions: {},
     } as FastifyCookieOptions)

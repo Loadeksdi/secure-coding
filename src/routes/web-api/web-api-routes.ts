@@ -1,7 +1,7 @@
 import { FastifyInstance } from "fastify";
 import { FromSchema } from "json-schema-to-ts";
-import { Session } from "../../entities/session";
 import { User } from "../../entities/user";
+import { saveSession } from "../../lib/session";
 import { AppDataSource } from "../../lib/typeorm";
 import { empty } from "../../schemas/empty-object";
 import { sessionRequest } from "../../schemas/session-request";
@@ -52,17 +52,49 @@ export const webApiRoutes = async (fastify: FastifyInstance) => {
                 await reply.status(401).send();
                 return;
             }
-            const sessionRepository = AppDataSource.getRepository(Session);
-            const session = sessionRepository.create();
-            session.user = user;
-            await sessionRepository.save(session);
-            await reply.status(201).setCookie('token', session.token, {
-                signed: true,
-                path: '/',
-                expires: session.revokedAt,
-                httpOnly: true,
-                secure: true
-            }).send();
+            await saveSession(reply, user);
+        },
+    );
+    fastify.get<{ Reply: FromSchema<typeof userResponse> }>(
+        '/users/me',
+        {
+            schema: {
+                response: 200,
+                querystring: empty,
+                params: empty
+            }
+        },
+        async (request, reply): Promise<void> => {
+            const user = request.user;
+            if (!request.session){
+                await reply.status(401).send();
+                return;
+            }
+            if (!user || (request.session?.revokedAt < new Date() || request.session?.expiredAt < new Date())) {
+                await reply.status(401).send();
+                return;
+            }
+            reply.send(user);
+        },
+    );
+    fastify.delete<{ Reply: FromSchema<typeof empty> }>(
+        '/sessions/current',
+        {
+            schema: {
+                response: 204,
+                querystring: empty,
+                params: empty,
+                body: empty
+            },
+        },
+        async (request, reply): Promise<void> => {
+            if (!request.session){
+                await reply.status(401).send();
+                return;
+            }
+            request.session.revokedAt = new Date();
+            await AppDataSource.getRepository(User).save(request.session);
+            await reply.status(204).send();
         },
     );
 }
