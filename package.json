@@ -30,7 +30,7 @@
     "@fastify/cookie": "^8.3.0",
     "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
-    "class-validator": "^0.13.2",
+    "class-validator": "^0.14.0",
     "dotenv": "^16.0.3",
     "fastify": "^4.11.0",
     "pg": "^8.8.0",
