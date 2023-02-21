@@ -4,7 +4,7 @@
   "description": "Basic template of a node + typescript project",
   "main": "dist/index.js",
   "scripts": {
-    "build": "rd /s /q dist && tsc",
+    "build": "rm -rf dist && tsc",
     "lint": "eslint --fix src",
     "test": "mocha --timeout 10000 --recursive dist/specs --exit --async-stack-traces",
     "start": "node dist/index.js"
