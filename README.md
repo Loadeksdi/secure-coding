@@ -75,5 +75,34 @@ user and POST /web-api/sessions would create a new session.
 | Additional library requirements                  | May require additional libraries for both solutions                                                |                                                                |
 
 ## Question 6: search and summarise solutions to protect the confidentiality of the session identifier stored in a browser’s cookie. Focus on the actions you can take as a backend developer or server-side infrastructure engineer.
-You need to use SSL and HTTPS first, then you can use the *HttpOnly* flag to prevent the cookie from being accessed by JavaScript. You can also use the *Secure* flag to prevent the cookie from being sent over HTTP. Also, you can use the *SameSite* flag to prevent the cookie from being sent in cross-site requests, and should be set to the *Strict* value when possible. Therefore, the browser only sends the cookie with requests from the cookie's origin site. Finally, the domain and path attributes can be used to limit the scope of the cookie, which is useful when dealing with session cookies.
-**Based on MDN documentation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies**
+
+You need to use SSL and HTTPS first, then you can use the _HttpOnly_ flag to
+prevent the cookie from being accessed by JavaScript. You can also use the
+_Secure_ flag to prevent the cookie from being sent over HTTP. Also, you can use
+the _SameSite_ flag to prevent the cookie from being sent in cross-site
+requests, and should be set to the _Strict_ value when possible. Therefore, the
+browser only sends the cookie with requests from the cookie's origin site.
+Finally, the domain and path attributes can be used to limit the scope of the
+cookie, which is useful when dealing with session cookies. **Based on MDN
+documentation: https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies**
+
+## Part 3 - Continuous Integration & Continuous Delivery
+
+Project available at: https://secure-coding.loadeksdi.com/
+
+- Added dependedabot for daily checks to the project will help to keep the
+  dependencies up to date and avoid security issues.
+- Using ESLint will help to keep the code clean and consistent.
+- Building and publishing a Docker Image only in the master branch to a Docker
+  Hub registry will make it available so that I can deploy it on my own server.
+- Secured git repository with linear history and pull requests to commit on
+  master branch. (Signed commits would be a great addition but it ended up
+  pretty badly for me)
+
+I use traefik for the reverse proxy and I can use the docker-compose file to
+deploy the app on my server, including the postgresql database and the image of
+my app, and a watchtower conatiner responsible for checking the image version
+and auto-deploying new versions of the app.
+
+Unfortunately, it seems complicated without setting up an in-memory database to
+be able to run the postgres tests in the CI/CD pipeline.
